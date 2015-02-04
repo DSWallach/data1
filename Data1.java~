@@ -1,0 +1,37 @@
+interface BST {
+    //int cardnality();
+}
+class Branch implements BST {
+    int iden;
+    BST left;
+    BST right;
+
+    Branch (BST left, int iden, BST right){
+	this.left = left;
+	this.iden = iden;
+	this.right = right;
+	}
+    public String toString(){
+	return "new Branch("
+	    + this.left + ", "
+	    + this.iden + ", "
+	    + this.right + ")";
+    }
+}
+class Leaf implements BST {
+    Leaf(){};
+    public String toString(){
+	return "new Leaf()";
+    }
+}
+class Data1 {
+    public static void main (String args[]){
+    BST leaf = new Leaf();
+    BST aBranch = new Branch (leaf, 2, leaf);
+    BST bBranch = new Branch (leaf, 3, leaf);
+    BST treeTrunk = new BST (aBranch, 1, bBranch);
+
+    System.out.println ("Hello " + treeTrunk.toString() + "How are you?");    }
+}
+
+			    
