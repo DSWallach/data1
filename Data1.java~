@@ -1,5 +1,6 @@
 interface BST {
-    //int cardnality();
+    int cardinality();
+    boolean isLeaf();
 }
 class Branch implements BST {
     int iden;
@@ -10,28 +11,51 @@ class Branch implements BST {
 	this.left = left;
 	this.iden = iden;
 	this.right = right;
-	}
+    }
+    public boolean isLeaf(){
+	return false;
+    }
     public String toString(){
 	return "new Branch("
 	    + this.left + ", "
 	    + this.iden + ", "
 	    + this.right + ")";
     }
-}
-class Leaf implements BST {
-    Leaf(){};
-    public String toString(){
-	return "new Leaf()";
+    public int cardinality(BST t){
+	int count = 0;
+	if (this.left.isLeaf()){
+	    count = count + cardinality(this.left);
+	}else if (this.right.isLeaf()){
+	    count = count + cardinality(this.right);			 
+	}else {
+	    return count;
+	}	
     }
-}
-class Data1 {
-    public static void main (String args[]){
-    BST leaf = new Leaf();
-    BST aBranch = new Branch (leaf, 2, leaf);
-    BST bBranch = new Branch (leaf, 3, leaf);
-    BST treeTrunk = new BST (aBranch, 1, bBranch);
+    class Leaf implements BST {
+	Leaf(){};
+	public String toString(){
+	    return "Leaf";
+	}
+	public int cardinality(BST t){
+	    return 1;
+	}
+	public boolean isLeaf(){
+	    return true;
+	}
+    }
+    class Data1 {
+	public static void main (String args[]){
+	    BST leaf = new Leaf();
+	    BST b7 = new Branch (leaf, 7, leaf);
+	    BST b6 = new Branch (leaf, 6, leaf);
+	    BST b5 = new Branch (leaf, 5, leaf);
+	    BST b4 = new Branch (leaf, 4, leaf);
+	    BST b3 = new Branch (b6, 3, b7);
+	    BST b2 = new Branch (b4, 2, b5);
+	    BST b1 = new Branch (b2, 1, b3);
 
-    System.out.println ("Hello " + treeTrunk.toString() + "How are you?");    }
-}
+	    System.out.println ("Hello " + (cardinality b1) + "How are you?");
+	}
+    }
 
 			    
