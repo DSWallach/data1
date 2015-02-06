@@ -1,6 +1,8 @@
 interface BST {
     int cardinality();
-    boolean isLeaf();
+    boolean isEmptyHuh();
+    boolean member(int elt);
+    BST add(int elt);
 }
 class Branch implements BST {
     int iden;
@@ -12,50 +14,94 @@ class Branch implements BST {
 	this.iden = iden;
 	this.right = right;
     }
-    public boolean isLeaf(){
+    public boolean isEmptyHuh(){
 	return false;
     }
-    public String toString(){
-	return "new Branch("
-	    + this.left + ", "
-	    + this.iden + ", "
-	    + this.right + ")";
-    }
-    public int cardinality(BST t){
+    public int cardinality(){
 	int count = 0;
-	if (this.left.isLeaf()){
-	    count = count + cardinality(this.left);
-	}else if (this.right.isLeaf()){
-	    count = count + cardinality(this.right);			 
-	}else {
-	    return count;
-	}	
+	if (!this.left.isEmptyHuh()){
+	    count = count + this.left.cardinality();
+	}
+	if (!this.right.isEmptyHuh()){
+	    count = count + this.right.cardinality();
+	}
+	count = count + 1;
+	return count;
     }
-    class Leaf implements BST {
-	Leaf(){};
-	public String toString(){
-	    return "Leaf";
+    public boolean member(int elt){
+	boolean memberHuh = false;
+	if (elt == this.iden){
+	    memberHuh = true;
 	}
-	public int cardinality(BST t){
-	    return 1;
+	if (!this.left.isEmptyHuh() && memberHuh == false){
+	    memberHuh = this.left.member(elt);
 	}
-	public boolean isLeaf(){
-	    return true;
+	if (!this.right.isEmptyHuh() && memberHuh == false){
+	    memberHuh = this.right.member(elt);
 	}
+	return memberHuh;
     }
-    class Data1 {
-	public static void main (String args[]){
-	    BST leaf = new Leaf();
-	    BST b7 = new Branch (leaf, 7, leaf);
-	    BST b6 = new Branch (leaf, 6, leaf);
-	    BST b5 = new Branch (leaf, 5, leaf);
-	    BST b4 = new Branch (leaf, 4, leaf);
-	    BST b3 = new Branch (b6, 3, b7);
-	    BST b2 = new Branch (b4, 2, b5);
-	    BST b1 = new Branch (b2, 1, b3);
+    public BST add(int elt){
+	BST empty = new Empty();
+	BST temp = new Branch (empty, elt, empty);
+      	// if (this.left.isEmptyHuh()){
+	//     BST newSet = new Branch (temp, this.iden, this.right);
+	// }
+	// else if (this.right.isEmptyHuh()){
+	//     BST newSet = new Branch (this.left, this.iden, temp);
+	// }
+	// else{
+	//     this.left.add(elt);
+	//     }
+	return empty;
+    }
+}
+class Empty implements BST {
+    Empty (){}
+    public String toString(){
+	String newString = ("empty");
+	return newString;
+    }
+    public int cardinality(){
+	return 0;
+    }
+    public boolean isBranch(){
+	return false;
+    }
+    public boolean isEmptyHuh(){
+	return true;
+    }
+    public boolean member(int elt){
+	return false;
+    }
+    public BST add(int elt){
+	BST empty = new Empty();
+        BST newSet = new Branch (empty, elt, empty);
+	return newSet;
+    }
+}
+class Data1 {
+    public static void main (String args[]){
+	BST empty = new Empty();
+	BST notEmpty = empty.add(6);
+	BST b7 = new Branch (empty, 7, empty);
+	BST b6 = new Branch (empty, 6, empty);
+	BST b5 = new Branch (empty, 5, empty);
+	BST b4 = new Branch (empty, 4, empty);
+	BST b3 = new Branch (b6, 3, b7);
+	BST b2 = new Branch (b4, 2, b5);
+	BST b1 = new Branch (b2, 1, b3);
+	//TESTS
+	System.out.println ("The cardinalty of this set is: " + empty.cardinality());
+	System.out.println ("The cardinalty of this set is: " + b1.cardinality());
+	System.out.println ("This set is empty is a " + empty.isEmptyHuh() + " statement");
+	System.out.println ("This set is empty is a " + b1.isEmptyHuh() + " statement");
+	System.out.println ("6 is a member of this set is a " + b3.member(5) + " statement");
+	System.out.println ("6 is a member of this set is a " + b1.member(6) + " statement");
+	System.out.println ("A set that was once " + empty
+			    + " now contains a " + notEmpty);
+    }
+}
 
-	    System.out.println ("Hello " + (cardinality b1) + "How are you?");
-	}
-    }
 
 			    
