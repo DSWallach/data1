@@ -1,9 +1,10 @@
+import java.util.Random;
 // A BST is either...
 interface BST {
+    // randomBST : int -> BST
+    BST randomBST(int numAdd, int rangeAdd);
     // cardinality : BST -> int
     int cardinality();
-    // iden : BST -> int
-    int iden();
     // isEmptyHuh : BST -> boolean
     boolean isEmptyHuh();
     // member : BST int -> boolean
@@ -18,10 +19,6 @@ interface BST {
     BST inter(BST t);
     // diff : BST BST -> BST
     BST diff(BST t);
-    // left : BST -> BST
-    BST left();
-    // right : BST -> BST
-    BST right();
     // equal : BST BST -> boolean
     boolean equal(BST t);
     // subset : BST BST -> boolean
@@ -31,7 +28,16 @@ interface BST {
 class Empty implements BST {
     Empty (){}
     public String toString(){
-	return ("empty");
+	return ("e");
+    }
+    public BST randomBST(int numAdd, int rangeAdd){
+	BST rBST = this;
+	for (int i=0; i<numAdd;i++){
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(rangeAdd);
+	    rBST = rBST.add(randInt);
+	}
+	return rBST;
     }
     public int cardinality(){
 	return 0;
@@ -40,7 +46,7 @@ class Empty implements BST {
 	return true;
     }
     public boolean member(int elt){
-	return false;//this.isEmptyHuh();
+	return false;
     }
     public BST add(int elt){
         return new Branch (this, elt, this);
@@ -55,16 +61,7 @@ class Empty implements BST {
 	return new Empty();
     }
     public BST diff(BST t){
-	return this;
-    }
-    public int iden(){
-        return 0;
-    }
-    public BST left(){
-	return new Empty();
-    }
-    public BST right(){
-	return new Empty();
+	return t;
     }
     public boolean equal(BST t){
 	return t.isEmptyHuh();
@@ -86,15 +83,21 @@ class Branch implements BST {
     }
     public String toString() {
         return "(" +
-            this.left + ", " +
-            this.iden + ", " +
+            this.left + "," +
+            this.iden + "," +
             this.right + ")";
+    }
+    public BST randomBST(int numAdd, int rangeAdd){
+	BST rBST = this;
+	for (int i=0; i<numAdd;i++){
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(rangeAdd);
+	    rBST = rBST.add(randInt);
+	}
+	return rBST;
     }
     public int cardinality(){
 	return 1 + this.left.cardinality() + this.right.cardinality();
-    }
-    public int iden(){
-	return this.iden;
     }
     public boolean isEmptyHuh(){
 	return false;
@@ -105,12 +108,6 @@ class Branch implements BST {
 	} else {
 	    return (this.left.member(elt) || this.right.member(elt));
 	}
-    }
-    public BST left(){
-	return this.left;
-    }
-    public BST right(){
-	return this.right;
     }
     public BST add(int elt){
 	if (elt == this.iden){
@@ -148,26 +145,21 @@ class Branch implements BST {
 	    newTree = this.left.union(this.right);
 	    newTree.inter(t);
 	} else {
-	    newTree = new Branch (this.left.inter(t), this.iden, this.right.inter(t));
+	    newTree = new Branch (this.left.inter(t),
+				  this.iden,
+				  this.right.inter(t));
 	}
 	return newTree;
     }
     public BST diff(BST t){
-	BST newTree;
-	if (t.equal(this)){
-	    newTree = new Empty();
-	} else {
-	    newTree = new Branch (this.left.diff(t.left()), this.iden, this.diff(t.right()));
-		}
-	return newTree; 
+	return this.remove(this.iden).diff(t.remove(this.iden));
     }
     public boolean equal(BST t){
-	return (this.left.equal(t.left()) && (this.iden==t.iden()) && this.right.equal(t.right()));
+	return (t.subset(this) && this.subset(t));
     }
     public boolean subset(BST t){
-	boolean subset;
 	if(!t.member(this.iden)){
-	     return false;
+	    return false;
         } else if (this.left.isEmptyHuh() && this.right.isEmptyHuh()) {
 	    return true;
 	} else {
@@ -177,7 +169,7 @@ class Branch implements BST {
 }
 class Data1 {
     public static void main (String args[]){
-	    //for testing purposes
+	//Premade Sets
 	BST empty = new Empty();
 	BST b0 = new Branch (empty, 0, empty);
 	BST b1 = new Branch (empty, 1, empty);
@@ -193,21 +185,32 @@ class Data1 {
 	BST b4 = new Branch (b2, 4, b6);
 	BST b4b = new Branch (b2b, 4, b7);
 	BST b4c = new Branch (b2, 4, b6c);
+
+	//Randomly Generated Sets
+	BST r0 = empty.randomBST(20, 100);
+	BST r1 = r0;
+	BST r2 = r0.add(120);
+	BST r3 = b2.randomBST(5, 100);
+	BST r4 = b2.randomBST(5, 100);
 	
 	//TESTS
-	// System.out.println ("The cardinalty of this set is: " + empty.cardinality());
-	// System.out.println ("The cardinalty of this set is: " + b4.cardinality());
-	// System.out.println ("This set is empty is: " + empty.isEmptyHuh() + ". It should be: true.");
-	// System.out.println ("This set is empty is: " + b1.isEmptyHuh() + ". It should be: false");
-	System.out.println ("5 is a member of this set is: " + b3.member(5) + ". It should be: false.");
-	System.out.println ("6 is a member of this set is: " + b4.member(6) + ". It should be: true");
-        // System.out.println (b4.add(7).toString()+ " Should contain: {1,2,3,4,5,6,7,8}");
-	// System.out.println (b4.remove(4).toString()+ " Should contain: {1,2,3,6,5,8}");
-	// System.out.println (b2.union(b6).toString()+ " Should contain: {1,2,3,5,6,8}");
-        System.out.println (b4b.inter(b4).toString()+ " Should contain: {2,3,4,5,8}");
-        System.out.println (b4.inter(b4b).toString()+ " Should contain: {2,3,4,5,8}");
-	// System.out.println (b4.diff(b4b).toString()+ " Should contain: {0,1,7}");
-        // System.out.println (b4b.diff(b4).toString()+ " Should contain: {0,1,7}");
+	System.out.println (r0.equal(r1)+ " Should be true");
+	System.out.println (r0.equal(r2)+ " Should be false");
+	System.out.println (r3.inter(r4)+ " Should contain at least {1,2,3}");
+	System.out.println (r3.diff(r4)+ " Should not contain {1,2,3}");
+	System.out.println (empty.cardinality()+ " Should be 0");
+	System.out.println (b4.cardinality()+ " Should be 7");
+	System.out.println (empty.isEmptyHuh() + " Should be true.");
+	System.out.println (b1.isEmptyHuh() + " Should be false");
+	System.out.println (b3.member(5) + " Should be false.");
+	System.out.println (b4.member(6) + " Should be: true");
+        System.out.println (b4.add(7)+ " Should contain: {1,2,3,4,5,6,7,8}");
+	System.out.println (b4.remove(4)+ " Should contain: {1,2,3,5,6,8}");
+	System.out.println (b2.union(b6)+ " Should contain: {1,2,3,5,6,8}");
+        System.out.println (b4b.inter(b4)+ " Should contain: {2,3,4,5,8}");
+        System.out.println (b4.inter(b4b)+ " Should contain: {2,3,4,5,8}");
+	System.out.println (b4.diff(b4b)+ " Should contain: {0,1,7}");
+        System.out.println (b4b.diff(b4)+ " Should contain: {0,1,7}");
         System.out.println (b4.equal(b4)+ " Should be true");
         System.out.println (b4.equal(b4b)+ " Should be false");
         System.out.println (b4.equal(b4c)+ " Should be false");
