@@ -56,7 +56,7 @@ class Empty implements FiniteSet {
 	return t.isEmptyHuh();
     }
     public boolean subset(FiniteSet t){
-	return t.isEmptyHuh();
+	return true;
     }
 }
 // - a Branch: (FiniteSet, int, FiniteSet)
@@ -116,23 +116,23 @@ class Branch implements FiniteSet {
 	}			       	   
     }
     public FiniteSet union(FiniteSet t){
-	FiniteSet newTree = t.union(this.left).union(this.right).add(this.iden);
-	return newTree;
+	FiniteSet newSet = t.union(this.left).union(this.right).add(this.iden);
+	return newSet;
     }
     public FiniteSet inter(FiniteSet t){
-	FiniteSet newTree;
+	FiniteSet newSet;
 	if (!t.member(this.iden)){
-	    newTree = this.left.union(this.right);
-	    newTree.inter(t);
+	    newSet = this.left.union(this.right);
+	    newSet.inter(t);
 	} else {
-	    newTree = new Branch (this.left.inter(t),
+	    newSet = new Branch (this.left.inter(t),
 				  this.iden,
 				  this.right.inter(t));
 	}
-	return newTree;
+	return newSet;
     }
     public FiniteSet diff(FiniteSet t){
-	return this.remove(this.iden).diff(t.remove(this.iden));
+	return this.remove(this.iden).diff(t).remove(this.iden);
     }
     public boolean equal(FiniteSet t){
 	return (t.subset(this) && this.subset(t));
@@ -140,28 +140,22 @@ class Branch implements FiniteSet {
     public boolean subset(FiniteSet t){
 	if(!t.member(this.iden)){
 	    return false;
-        } else if (this.left.isEmptyHuh() && this.right.isEmptyHuh()) {
-	    return true;
-	} else {
+        } else {
 	    return this.remove(this.iden).subset(t);
 	}
     }
 }
 class Data1 {
-    public static FiniteSet randomFiniteSet(FiniteSet t, int numAdd, int rangeAdd){
-	FiniteSet rFiniteSet = t;
+    public static FiniteSet randomFiniteSet(int numAdd, int rangeAdd){
+	FiniteSet rFiniteSet = new Empty();
 	for (int i=0; i<numAdd;i++){
 	    Random newRandom = new Random();
 	    int randInt = newRandom.nextInt(rangeAdd);
-	    while (rFiniteSet.member(randInt)){
-		newRandom = new Random();
-		randInt = newRandom.nextInt(rangeAdd);
-	    }
 	    rFiniteSet = rFiniteSet.add(randInt);
 	}
 	return rFiniteSet;
     }
-    public static String memberTest(FiniteSet t , int numTest, int rangeTest){
+    public static String memberTest(int numTest, int rangeTest){
         int passed = 0;
 	int failed = 0;
 	for (int i=0;i<numTest;i++){
@@ -169,13 +163,13 @@ class Data1 {
 	    Random newRandomX = new Random();
 	    int y = newRandomY.nextInt(rangeTest);
 	    int x = newRandomX.nextInt(rangeTest);
-	    FiniteSet set = randomFiniteSet(t, numTest, rangeTest);
+	    FiniteSet newSet = randomFiniteSet(i, rangeTest);
 	    if (x < (rangeTest/2)){
 		y = x;
 	    } else {
-		set = set.add(y);
+		newSet = newSet.add(y);
 	    }
-	    if (set.add(x).member(y)){
+	    if (newSet.add(x).member(y)){
 		passed++;
 	    } else {
 		failed++;
@@ -183,15 +177,15 @@ class Data1 {
 	}
 	return (passed+" tests passed. " + failed+" tests failed.");
     }
-    public static String unionTest(FiniteSet t , int numTest, int rangeTest){
+    public static String unionTest(int numTest, int rangeTest){
         int passed = 0;
 	int failed = 0;
 	for (int i=0;i<numTest;i++){
 	    Random newRandom = new Random();
 	    int x = newRandom.nextInt(rangeTest);
-	    FiniteSet setA = randomFiniteSet(t, (numTest/2), rangeTest);
-	    FiniteSet setB = randomFiniteSet(t, (numTest/2), rangeTest);
-	    if (x>(rangeTest/2)){
+	    FiniteSet setA = randomFiniteSet((i/2), rangeTest);
+	    FiniteSet setB = randomFiniteSet((i/2), rangeTest);
+	    if (x < (rangeTest/2)){
 		setA = setA.add(x);
 	    } else {
 		setB = setB.add(x);
@@ -221,27 +215,28 @@ class Data1 {
 	
 	//TESTS
 	System.out.println ("RANDOMLY GENERATED TESTS");
-	System.out.println (memberTest(empty, 50, 10000));
-	System.out.println (unionTest(empty, 50, 10000));		    
+	System.out.println (memberTest(50, 10000));
+	System.out.println (unionTest(50, 10000));	
 	System.out.println ();
 	System.out.println ("PREMADE TESTS");
-	System.out.println (empty.cardinality()+ " Should be 0");
-	System.out.println (b4.cardinality()+ " Should be 7");
-	System.out.println (empty.isEmptyHuh() + " Should be true.");
-	System.out.println (b1.isEmptyHuh() + " Should be false");
-	System.out.println (b3.member(5) + " Should be false.");
-	System.out.println (b4.member(6) + " Should be true");
+	System.out.println ("Should be 0. Is "+empty.cardinality());
+	System.out.println ("Should be 7. Is "+b4.cardinality());
+	System.out.println ("Should be true.  Is "+empty.isEmptyHuh());
+	System.out.println ("Should be false. Is "+b4.isEmptyHuh());
+	System.out.println ("Should be false. Is "+b3.member(5));
+	System.out.println ("Should be true.  Is "+b4.member(6));
         System.out.println ("Should contain {1,2,3,4,5,6,7,8}. Contains "+b4.add(7));
 	System.out.println ("Should contain {1,2,3,5,6,8}. Contains "+b4.remove(4));
 	System.out.println ("Should contain {1,2,3,5,6,8}. Contains "+b2.union(b6));
-        System.out.println ("Should contain {2,3,4,5,8}.Contains "+b4b.inter(b4));
+	System.out.println ("Should contain {1,2,3,5,6,8}. Contains "+b6.union(b2));
+        System.out.println ("Should contain {2,3,4,5,8}. Contains "+b4b.inter(b4));
         System.out.println ("Should contain {2,3,4,5,8}. Contains "+b4.inter(b4b));
-	System.out.println ("Should contain {0,1,7}. Contains "+b4.diff(b4b));
-        System.out.println ("Should contain {0,1,7}. Contains "+b4b.diff(b4));
-        System.out.println (b4.equal(b4)+ " Should be true");
-        System.out.println (b4.equal(b4b)+ " Should be false");
-	System.out.println (b2.subset(b4)+ " Should be true");
-	System.out.println (b4.subset(b2)+ " Should be false");
+	System.out.println ("Should contain {0,7}. Contains "+b4.diff(b4b));
+        System.out.println ("Should contain {1,6}. Contains "+b4b.diff(b4));
+        System.out.println ("Should be true.  Is "+b4.equal(b4));
+        System.out.println ("Should be false. Is "+b4b.equal(b4));
+	System.out.println ("Should be true.  Is "+b2.subset(b4));
+	System.out.println ("Should be false. Is "+b4.subset(b2));
     }
 }
 
