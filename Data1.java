@@ -35,6 +35,10 @@ class Empty implements BST {
 	for (int i=0; i<numAdd;i++){
 	    Random newRandom = new Random();
 	    int randInt = newRandom.nextInt(rangeAdd);
+	    while (rBST.member(randInt)){
+		newRandom = new Random();
+		randInt = newRandom.nextInt(rangeAdd);
+	    }
 	    rBST = rBST.add(randInt);
 	}
 	return rBST;
@@ -92,6 +96,10 @@ class Branch implements BST {
 	for (int i=0; i<numAdd;i++){
 	    Random newRandom = new Random();
 	    int randInt = newRandom.nextInt(rangeAdd);
+	    while (rBST.member(randInt)){
+		newRandom = new Random();
+		randInt = newRandom.nextInt(rangeAdd);
+	    }
 	    rBST = rBST.add(randInt);
 	}
 	return rBST;
@@ -167,6 +175,166 @@ class Branch implements BST {
 	}
     }
 }
+interface Test {
+    String cardinalityTest(int numTests);
+    String memberTest(int numTests);
+    String addTest(int numTest);
+    String removeTest(int numTest);
+    String unionTest(int numTests);
+    String interTest(int numTests);
+    String diffTest(int numTests);
+    String equalTest(int numTests);
+    String subsetTest(int numTests);
+    
+}
+class Tester implements Test{
+    Tester(){};
+    public String cardinalityTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBST = new Empty();
+	    testBST = testBST.randomBST(i, 25);
+	    if (testBST.cardinality()==i){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String memberTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBST = new Empty();
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(100);
+	    testBST = testBST.randomBST(i, 25).add(randInt);
+	    if (testBST.member(randInt)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String addTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(100);	    
+	    BST testBST = new Empty();
+	    testBST = testBST.randomBST(i,50).add(randInt);	    
+	    if (testBST.member(randInt)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String unionTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(100);	    
+	    BST testBST = new Empty();
+	    BST testBSTb = new Empty();
+	    testBST = testBST.randomBST(i,50);
+	    testBSTb = testBSTb.add(randInt);	    
+	    if (testBSTb.union(testBST).equal(testBST.add(randInt))){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String removeTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	BST empty = new Empty();
+	for (int i=0;i<numTest;i++){
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(100);
+	    BST testBST = new Branch (empty, i, empty);
+	    testBST = testBST.randomBST(i,50).remove(i);
+	    if (testBST.member(i)){
+	        failed++;
+	    } else {
+		passed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String interTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBSTsubset = new Empty();
+	    testBSTsubset = testBSTsubset.randomBST(i, 25);
+	    BST testBST = testBSTsubset.randomBST((i/2),50);
+	    if (testBSTsubset.inter(testBST).equal(testBSTsubset)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+        public String diffTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBST = new Empty();
+	    testBST = testBST.randomBST(i, 25);
+	    BST testBSTb = new Empty();
+	    testBST = testBSTb.randomBST((i/2),50);
+	    BST testBSTc = testBST.union(testBSTb);
+	    if (testBST.diff(testBSTc).equal(testBSTb)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String equalTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBST = new Empty();
+	    Random newRandom = new Random();
+	    int randInt = newRandom.nextInt(100);
+	    testBST = testBST.randomBST(i, 25);
+	    BST testBSTb = testBST;
+	    if (testBSTb.equal(testBST)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+    public String subsetTest(int numTest){
+	int passed = 0;
+	int failed = 0;
+	for (int i=0;i<numTest;i++){
+	    BST testBSTsubset = new Empty();
+	    testBSTsubset = testBSTsubset.randomBST(i, 25);
+	    BST testBST = testBSTsubset.randomBST((i/2),50);
+	    if (testBSTsubset.subset(testBST)){
+		passed++;
+	    } else {
+		failed++;
+	    }
+	}
+	return (passed + " tests passed. "+ failed +" tests failed.");
+    }
+}
 class Data1 {
     public static void main (String args[]){
 	//Premade Sets
@@ -193,7 +361,9 @@ class Data1 {
 	BST r3 = b2.randomBST(5, 100);
 	BST r4 = b2.randomBST(5, 100);
 	
-	//TESTS
+	//TEST
+	Test Test = new Tester();
+	System.out.println ("PREMADE TESTS");
 	System.out.println (r0.equal(r1)+ " Should be true");
 	System.out.println (r0.equal(r2)+ " Should be false");
 	System.out.println (r3.inter(r4)+ " Should contain at least {1,2,3}");
@@ -203,19 +373,30 @@ class Data1 {
 	System.out.println (empty.isEmptyHuh() + " Should be true.");
 	System.out.println (b1.isEmptyHuh() + " Should be false");
 	System.out.println (b3.member(5) + " Should be false.");
-	System.out.println (b4.member(6) + " Should be: true");
-        System.out.println (b4.add(7)+ " Should contain: {1,2,3,4,5,6,7,8}");
-	System.out.println (b4.remove(4)+ " Should contain: {1,2,3,5,6,8}");
-	System.out.println (b2.union(b6)+ " Should contain: {1,2,3,5,6,8}");
-        System.out.println (b4b.inter(b4)+ " Should contain: {2,3,4,5,8}");
-        System.out.println (b4.inter(b4b)+ " Should contain: {2,3,4,5,8}");
-	System.out.println (b4.diff(b4b)+ " Should contain: {0,1,7}");
-        System.out.println (b4b.diff(b4)+ " Should contain: {0,1,7}");
+	System.out.println (b4.member(6) + " Should be true");
+        System.out.println (b4.add(7)+ " Should contain {1,2,3,4,5,6,7,8}");
+	System.out.println (b4.remove(4)+ " Should contain {1,2,3,5,6,8}");
+	System.out.println (b2.union(b6)+ " Should contain {1,2,3,5,6,8}");
+        System.out.println (b4b.inter(b4)+ " Should contain {2,3,4,5,8}");
+        System.out.println (b4.inter(b4b)+ " Should contain {2,3,4,5,8}");
+	System.out.println (b4.diff(b4b)+ " Should contain {0,1,7}");
+        System.out.println (b4b.diff(b4)+ " Should contain {0,1,7}");
         System.out.println (b4.equal(b4)+ " Should be true");
         System.out.println (b4.equal(b4b)+ " Should be false");
         System.out.println (b4.equal(b4c)+ " Should be false");
 	System.out.println (b2.subset(b4)+ " Should be true");
 	System.out.println (b4.subset(b2)+ " Should be false");
+	System.out.println ();
+	System.out.println ("RANDOM TESTS");
+	System.out.println (Test.cardinalityTest(20));
+	System.out.println (Test.memberTest(20));
+	System.out.println (Test.addTest(20));
+	System.out.println (Test.removeTest(20));
+	System.out.println (Test.unionTest(20));
+	System.out.println (Test.interTest(20));
+	System.out.println (Test.diffTest(20));
+	System.out.println (Test.equalTest(20));
+	System.out.println (Test.subsetTest(20));
     }
 }
 
